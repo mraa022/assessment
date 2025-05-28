@@ -145,7 +145,6 @@
 </template>
 
 <script setup>
-import RadialTree from "@/components/RadialTree.vue";
 
 import { ref, onMounted, computed, reactive } from "vue";
 import { Graph } from "graphlib";
