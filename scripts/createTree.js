@@ -1,14 +1,21 @@
-// generateOrgTree.js
-
-import fs from 'fs'
-import Papa from 'papaparse'
-import { Graph } from 'graphlib'
+// creates a directed graph from the csv file where vertices represent records
+// and vertex a is connected to vertex b if a is a manager of b.
+// then once we have this graph, we can create a tree for the organization chart component of primevue
+// having a graph makes finding the other statists a lot easier.
+// once we have all this, we save it to a json file in /public so that
+// vue can easily access it faster later
+import fs from "fs";
+import Papa from "papaparse";
+import { Graph } from "graphlib";
 
 // --- Utility ---
 function getInitials(name) {
-  if (!name) return '';
-  const words = name.trim().split(' ');
-  return words.map(w => w[0].toUpperCase()).slice(0, 2).join('');
+  if (!name) return "";
+  const words = name.trim().split(" ");
+  return words
+    .map((w) => w[0].toUpperCase())
+    .slice(0, 2)
+    .join("");
 }
 
 function computeDescendantStats(node, employeeData) {
@@ -22,13 +29,14 @@ function computeDescendantStats(node, employeeData) {
     const result = computeDescendantStats(child, employeeData);
 
     totalDescendants += 1 + result.totalDescendants;
-    nonLeafDescendants += (child.children.length > 0 ? 1 : 0) + result.nonLeafDescendants;
+    nonLeafDescendants +=
+      (child.children.length > 0 ? 1 : 0) + result.nonLeafDescendants;
     managementCost += result.managementCost;
     icCost += result.icCost;
     totalCost += result.totalCost;
   }
 
-  const ownSalary = parseFloat(employeeData[node.key]?.Salary || '0');
+  const ownSalary = parseFloat(employeeData[node.key]?.Salary || "0");
   totalCost += ownSalary;
 
   if (node.children.length > 0) {
@@ -67,15 +75,15 @@ function buildTreeFromGraph(graph, rootId, employeeData) {
 
     const children = (graph.successors(id) || [])
       .map(buildNode)
-      .filter(child => child !== null);
+      .filter((child) => child !== null);
 
     const node = {
       key: id,
-      type: 'person',
+      type: "person",
       data: {
         Name: person.Name,
-        'Job Title': person['Job Title'],
-        Salary: person['Salary'],
+        "Job Title": person["Job Title"],
+        Salary: person["Salary"],
         initials: getInitials(person.Name),
       },
       children,
@@ -99,7 +107,7 @@ function createGraph(employeeData) {
 
   for (const id of ids) {
     const person = employeeData[id];
-    const manager_id = person['Manager'];
+    const manager_id = person["Manager"];
     if (manager_id && employeeData[manager_id]) {
       g.setEdge(manager_id, id);
     }
@@ -109,13 +117,13 @@ function createGraph(employeeData) {
 }
 
 function findRoot(employeeData) {
-  return Object.values(employeeData).find(p => !p.Manager)?.['Employee Id'];
+  return Object.values(employeeData).find((p) => !p.Manager)?.["Employee Id"];
 }
 
 // --- Main ---
-fs.readFile('public/job_assesment.csv', 'utf8', (err, csvData) => {
+fs.readFile("public/job_assesment.csv", "utf8", (err, csvData) => {
   if (err) {
-    console.error('Failed to read CSV:', err);
+    console.error("Failed to read CSV:", err);
     return;
   }
 
@@ -123,7 +131,7 @@ fs.readFile('public/job_assesment.csv', 'utf8', (err, csvData) => {
   const employeeData = {};
 
   for (const record of parsed.data) {
-    const id = record['Employee Id'];
+    const id = record["Employee Id"];
     if (id) {
       employeeData[id] = record;
     }
@@ -133,6 +141,10 @@ fs.readFile('public/job_assesment.csv', 'utf8', (err, csvData) => {
   const rootId = findRoot(employeeData);
   const tree = buildTreeFromGraph(graph, rootId, employeeData);
 
-  fs.writeFileSync('public/treeData.json', JSON.stringify(tree, null, 2), 'utf8');
-  console.log('✅ Org tree saved to treeData.json');
+  fs.writeFileSync(
+    "public/treeData.json",
+    JSON.stringify(tree, null, 2),
+    "utf8"
+  );
+  console.log("Org tree saved to treeData.json");
 });
