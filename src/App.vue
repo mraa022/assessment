@@ -196,34 +196,34 @@ const data = ref({
   data: { name: "Alice Johnson", title: "Chief Executive Officer" },
   children: [
     {
-      key: "0_0",
+      key: "1",
       type: "person",
       data: { name: "Bob Smith", title: "Chief Technology Officer" },
       children: [
         {
-          key: "0_0_0",
+          key: "2",
           type: "person",
           data: { name: "Carol White", title: "Engineering Manager" },
         },
         {
-          key: "0_0_1",
+          key: "3",
           type: "person",
           data: { name: "David Brown", title: "QA Manager" },
         },
       ],
     },
     {
-      key: "0_1",
+      key: "7",
       type: "person",
       data: { name: "Eve Davis", title: "Chief Financial Officer" },
       children: [
         {
-          key: "0_1_0",
+          key: "8",
           type: "person",
           data: { name: "Frank Moore", title: "Finance Manager" },
         },
         {
-          key: "0_1_1",
+          key: "9",
           type: "person",
           data: { name: "Grace Lee", title: "Compliance Officer" },
         },
