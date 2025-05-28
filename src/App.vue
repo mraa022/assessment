@@ -256,9 +256,9 @@ function getTreeUpToLevel(node, maxLevel, currentLevel = 1) {
 }
 
 onMounted(async () => {
-  const res = await fetch("/treeData.json");
+  const res = await fetch("/treeData.json"); // this file was created beforehand by running the createTree.js file in /scripts
   const json = await res.json();
-  const fullTree = json; // Keep the whole thing in memory
+  const fullTree = json; 
 
   data.value = getTreeUpToLevel(fullTree, 3);
 });
